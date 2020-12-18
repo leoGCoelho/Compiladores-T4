@@ -1,0 +1,24 @@
+main{
+    var int i;
+    var float i2;
+    var void i3;
+    var bool flag;
+    i := 0;
+    flag := Menor (i, 10);
+
+    while ((flag == true)) do {
+        print (i);
+        i := (i + 1);
+        flag := Menor (i, 10);
+    };
+
+}
+
+function bool Menor (int x, int y){
+    if ((x < y)) do{
+        return true;
+    };
+    else do{
+        return false;
+    };
+}

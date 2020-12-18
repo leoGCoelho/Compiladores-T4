@@ -1,0 +1,49 @@
+LUGOSI -> MAIN FUNC?
+
+MAIN -> "main" "{" VARDECL SEQCOMANDOS "}"
+
+VARDECL -> "var" TIPO TOKEN_id ";" VARDECL'
+VARDECL' -> "var" TIPO TOKEN_id ";" VARDECL' | vazio
+
+TIPO -> "int" | "bool" | "float" | "void"
+
+SEQCOMANDOS -> COMANDO SEQCOMANDOS'
+SEQCOMANDOS' -> COMANDO SEQCOMANDOS' | vazio
+
+COMANDO -> TOKEN_id ":=" EXP ";"
+    | TOKEN_id "(" LISTAEXP? ")" ";"
+    | "if" "(" EXP ")" "{" SEQCOMANDOS "}" ";"
+    | "while" "(" EXP ")" "do" "{" SEQCOMANDOS "}" ";"
+    | "do" "{" SEQCOMANDOS "}" "while" "(" EXP ")" ";"
+    | "return" EXP ";"
+    | "print" "(" EXP ")" ";"
+
+EXP -> "(" EXP OP EXP ")" | FATOR
+
+FATOR -> TOKEN_id | TOKEN_id "(" LISTAEXP? ")"
+
+| TOKEN_numliteral | "true" | "false"
+
+OP -> "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "=="
+
+LISTAEXP -> EXP LISTAEXP'
+LISTAEXP' -> "," EXP LISTAEXP' | vazio
+
+FUNC -> "function" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" FUNC'
+FUNC' -> "function" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" FUNC' | vazio
+
+LISTAARG -> TIPO TOKEN_id LISTAARG'
+LISTAARG' -> "," TIPO TOKEN_id LISTAARG' | vazio
+
+
+
+TOKEN_id -> letra letraoudigito* finalsublinhado*
+TOKEN_numliteral -> digitos facao_opcional expoente_opcional
+onde:
+letra -> [a-zA-Z]
+digito -> [0-9]
+digitos -> digito+
+facao_opcional -> (.digitos)?
+expoente_opcional -> (E (+ | -)? digitos)?
+letraoudigito -> letra | digito
+finalsublinhado -> _letraoudigito+

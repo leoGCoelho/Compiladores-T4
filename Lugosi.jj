@@ -1,0 +1,504 @@
+// FUNCOES ADICIONADAS NAO REQUISITADAS: ELSE, >, <, !
+
+PARSER_BEGIN(Lugosi)
+import java.io.*;
+  
+  // CONSTRUCAO DA ARVORE
+class ArvoreLugosi{
+  Main main;
+  ArrayList<Func> func;
+
+  ArvoreLugosi(Main m,ArrayList <Func> f){
+    this.main=m;
+    this.func=f;
+  }
+}
+// FIM CONSTRUCAO DA ARVORE
+
+// MAIN
+class Main{
+  ArrayList <Vardecl> vardecl;
+  ArrayList <SeqComandos> seqcom;
+
+  Main(ArrayList <Vardecl> v,ArrayList <SeqComandos> s){
+    this.vardecl=v;
+    this.seqcom=s;
+  }
+}
+// FIM MAIN
+
+// VARDECL
+class Vardecl{
+  String tipo;
+  String var;
+
+  Vardecl(String t, String v){
+    this.tipo = t;
+    this.var = v.image;
+  }
+}
+//FIM VARDECL
+
+// SEQCOMANDOS
+class SeqComandos{
+  ArrayList <Comandos> comandos;
+
+  SeqComandos(ArrayList <Comandos> c){this.comandos=c;}
+}
+// FIM MAIN
+
+// COMANDOS
+class Comandos{}
+
+// ATRIBUICAO
+class Atrib extends Comandos{
+  String var;
+  Exp exp;
+
+  Atrib(String v, Exp e){
+    this.var=v.image;
+    this.exp=e;
+  }
+}
+// FIM ATRIBUICAO
+
+// PRINT
+class Print extends Comandos{
+  Exp exp;
+
+  Print(Exp e){
+    this.exp=e;
+  }
+}
+// FIM PRINT
+
+// WHILE
+class FuncCall extends Comandos{
+  String exp;
+  SeqComandos seqcom;
+
+  While(Exp exp, SeqComandos seqcom){
+    this.exp=e;
+    this.seqcom=s;
+  }
+}
+// FIM WHILE
+
+// IF
+class If extends Comandos{
+  Exp exp;
+  SeqComandos seqcom;
+
+  If(Exp e, SeqComandos s){
+    this.exp=e;
+    this.seqcom=s;
+  }
+}
+// FIM IF
+
+// WHILE
+class While extends Comandos{
+  Exp exp;
+  SeqComandos seqcom;
+
+  While(Exp exp, SeqComandos seqcom){
+    this.exp=e;
+    this.seqcom=s;
+  }
+}
+// FIM WHILE
+
+// DO-WHILE
+class DoWhile extends Comandos{
+  SeqComandos seqcom;
+  Exp exp;
+
+  DoWhile(SeqComandos seqcom, Exp exp){
+    this.seqcom=s;
+    this.exp=e;
+  }
+}
+// FIM DO-WHILE
+
+// RETURN
+class Return extends Comandos{
+  Exp exp;
+
+  Return(Exp e){this.exp = e;}
+}
+// FIM RETURN
+// FIM COMANDOS
+
+
+// COMANDOS
+class Exp{}
+
+// OPERATION
+class Operation extends Exp{
+  Exp exp1;
+  String op;
+  Exp exp2;
+
+  Operation(Exp e1, String o, Exp e2){
+    this.exp1 = e1;
+    this.op = o;
+    this.exp2 = e2;
+  }
+}
+// FIM OPERATION
+
+// FATOR
+class Fator extends Exp{}
+
+// FATOR_ID
+class FatorId extends Fator{
+  String TOKEN_id;
+
+  FatorId(String id){this.TOKEN_id = id;}
+}
+// FIM FATOR_ID
+
+// FATOR_FUNC
+class FatorFunc extends Fator{
+  String TOKEN_id;
+  ArrayList <Exp> ListaExp;
+
+  FatorId(String id, ArrayList <Exp> l){
+    this.TOKEN_id = id;
+    this.ListaExp = l;
+  }
+}
+// FIM FATOR_FUNC
+
+// FATOR_NUM
+class FatorNum extends Fator{
+  String TOKEN_numliteral;
+
+  FatorNum(String num){this.TOKEN_numliteral = num;}
+}
+// FIM FATOR_NUM
+
+// FATOR_BOOL
+class FatorBool extends Fator{
+  String bool;
+
+  FatorBool(String b){this.bool = b;}
+}
+// FIM FATOR_BOOL
+// FIM FATOR
+// FIM EXP
+
+// LISTAEXP
+class ListaExp{
+  Exp exp;
+
+  ListaExp(Exp e){this.exp = e;}
+}
+// FIM LISTAEXP
+
+// FUNC
+class Func{
+  String tipo;
+  String id;
+  ArrayList <ListaArg> listarg;
+  ArrayList <Vardecl> vardecl;
+  ArrayList <SeqComandos> seqcom;
+
+  Func(String t, String i, ArrayList <ListaArg> l, ArrayList <Vardecl> v, ArrayList <SeqComandos> s){
+    this.tipo = t;
+    this.id = i;
+    this.listarg = l;
+    this.vardecl = v;
+    this.seqcom = s;
+  }
+}
+// FIM FUNC
+
+// LISTAARG
+class ListaArg{
+  String tipo;
+  String id;
+
+  ListaArg(String t, String i){
+    this.tipo = t;
+    this.id = i;
+  }
+}
+// FIM LISTAARG
+
+public class Lugosi {
+  
+  public static void main(String args[]) throws Exception{
+    // abrir o arquivo passado por linha
+    // de comando contento o código em Lugosi:
+    FileInputStream fs = new FileInputStream(new File(args[0]));
+
+    // Instanciar o parser da linguagem Lugosi passando
+    // como argumento o arquivo contendo o código
+    //Lugosi a ser processado:
+    Lugosi parser = new Lugosi(fs);
+
+    // Chamar a primeira regra do parser que irá
+    // analisar o código e devolver a árvore sintática
+    ArvoreLugosi arvore =parser.Lugosi();
+
+    // passar a árvore para o gerador de código
+    // que deve gerar um arquivo .java com o mesmo
+    //nome do arquivo de entrada
+    //geraCodigo(arvore, args[0]);
+  }
+  //public static void geraCodigo(ArvoreLugosi prog, String arquivo){??????}
+}
+
+PARSER_END(Lugosi)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  <MAIN: "main">
+| <FUNC: "function">
+
+| <PRINT: "print">
+| <WHILE: "while">
+| <DO: "do">
+| <IF: "if">
+| <ELSE: "else"> // Funcao a mais
+| <RETURN: "return">
+
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APARENTESES: "(">
+| <FPARENTESES: ")">
+| <PONTOVIRGULA: ";">
+| <VIRGULA: ",">
+
+| <ATRIB: ":=">
+| <ADD: "+">
+| <SUB: "-">
+| <MULT: "*">
+| <DIV: "/">
+| <AND: "&&">
+| <OR: "||">
+| <MAIOR: ">">
+| <MENOR: "<">
+| <IGUAL: "==">
+| <DIFERENTE: "!=">
+| <NOT: "!"> // Funcao a mais
+| <MAIORIGUAL: ">="> // Funcao a mais
+| <MENORIGUAL: "<="> // Funcao a mais
+
+| <VAR: "var">
+| <INT: "int">
+| <FLOAT: "float">
+| <BOOL: "bool">
+| <VOID: "void">
+| <TRUE: "true">
+| <FALSE: "false">
+
+}
+
+TOKEN :
+{
+ <NUM : (["0"-"9"])+ ("E" (["+","-"])? ((["0"-"9"])+))?>
+ |< ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* ("_"(["a"-"z","A"-"Z","0"-"9"])+)*>
+ |<FLOATNUM : (["0"-"9"])+ ("."( (["0"-"9"])+)) ("E" (["+","-"])? ((["0"-"9"])+))?>
+
+}
+
+
+
+// ANALISE LEXICA
+void AnaliseLexica () :
+{Token t;}
+{
+
+(
+  <MAIN> { System.out.println("Palavra reservada: main");}
+| <FUNC> { System.out.println("Palavra reservada: function");}
+
+| <PRINT> { System.out.println("Palavra reservada: print");}
+| <WHILE> { System.out.println("Palavra reservada: while");}
+| <DO> { System.out.println("Palavra reservada: do");}
+| <IF> { System.out.println("Palavra reservada: if");}
+| <ELSE> { System.out.println("Palavra reservada: else");}
+| <RETURN> { System.out.println("Palavra reservada: return");}
+
+| <VAR> { System.out.println("Palavra reservada: var");}
+| <INT> { System.out.println("Palavra reservada: int");}
+| <FLOAT> { System.out.println("Palavra reservada: float");}
+| <BOOL> { System.out.println("Palavra reservada: bool");}
+| <VOID> { System.out.println("Palavra reservada: void");}
+
+| <ACHAVES> { System.out.println("Abre chaves: {");}
+| <FCHAVES> { System.out.println("Fecha chaves: }");}
+| <APARENTESES> { System.out.println("Abre parenteses: (");}
+| <FPARENTESES> { System.out.println("Fecha parenteses: )");}
+| <PONTOVIRGULA> { System.out.println("Ponto e virgula: ;");}
+| <VIRGULA> { System.out.println("Virgula: ,");}
+
+| <ATRIB> { System.out.println("Atribuicao: :=");}
+| <ADD> { System.out.println("Adicao: +");}
+| <SUB> { System.out.println("Subtracao: -");}
+| <MULT> { System.out.println("Multiplicacao: *");}
+| <DIV> { System.out.println("Divisao: /");}
+| <AND> { System.out.println("Operacao logica E: &&");}
+| <OR> { System.out.println("Operacao logica OU: ||");}
+| <NOT> { System.out.println("Operacao logica NAO: !");}
+| <MAIOR> { System.out.println("Maior: >");}
+| <MENOR> { System.out.println("Menor: <");}
+| <IGUAL> { System.out.println("IGUAL: ==");}
+| <DIFERENTE> { System.out.println("DIFERENTE: !=");}
+| <MAIORIGUAL> { System.out.println("Maior/Igual: >=");}
+| <MENORIGUAL> { System.out.println("Menor/Igual: <=");}
+
+| t=<NUM> { System.out.println("Numero Inteiro: "+ t.image);}
+| t=<FLOATNUM> { System.out.println("Numero Flutuante: "+ t.image);}
+| t=<ID> { System.out.println("Identificador: "+ t.image);}
+| <TRUE> { System.out.println("Booleano: true");}
+| <FALSE> { System.out.println("Booleano: false");}
+)*
+<EOF> 
+
+
+}
+// FIM ANALISE LEXICA
+
+
+// ANALISE SINTATICA
+ArvoreLugosi Lugosi () :
+{Main main; ArrayList <Func> func = new ArrayList <Func> ();}
+{
+  (main=MainLug()) (fun =Func())?
+  <EOF> 
+  {return new ArvoreLugosi(main, func);}
+}
+
+Main MainLug () :
+{ArrayList <Vardecl> vardecl = new ArrayList <Vardecl>; SeqComandos seqcom;}
+{
+  <MAIN> <ACHAVES> (vardecl=Vardecl(vardecl)) (seqcom=SeqComandos()) <FCHAVES>
+  {return new Main(vardecl, seqcom);}
+}
+
+void Vardecl (ArrayList <Vardecl> var) :
+{Vardecl vardecl}
+{
+  (<VAR> Tipo() <ID> <PONTOVIRGULA> VardeclL())?
+}
+
+void VardeclL () :
+{}
+{
+  (<VAR> Tipo() <ID> <PONTOVIRGULA> VardeclL())?
+}
+
+void Tipo () :
+{}
+{
+  <INT> | <FLOAT> | <BOOL> | <VOID>
+}
+
+void SeqComandos () :
+{}
+{
+  Comandos() SeqComandosL()
+}
+
+void SeqComandosL () :
+{}
+{
+  (Comandos() SeqComandosL())?
+}
+
+void Comandos ():
+{}
+{
+  (<ID> ComandosL())
+  | (<PRINT> <APARENTESES> Exp() <FPARENTESES> <PONTOVIRGULA>)
+  | ((<IF> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PONTOVIRGULA>) (<ELSE> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PONTOVIRGULA>)?)
+  | (<WHILE> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PONTOVIRGULA>)
+  | (<DO> <ACHAVES> SeqComandos() <FCHAVES> <WHILE> <APARENTESES> Exp() <FPARENTESES> <PONTOVIRGULA>)
+  | (<RETURN> Exp() <PONTOVIRGULA>)
+
+}
+
+void ComandosL ():
+{}
+{
+  <ATRIB> Exp() <PONTOVIRGULA>
+  | <APARENTESES> (ListaExp())? <FPARENTESES> <PONTOVIRGULA>
+}
+
+void Exp ():
+{}
+{
+  <APARENTESES> Exp() Op() Exp() <FPARENTESES>
+  | Fator()
+}
+
+void Fator ():
+{}
+{
+  <ID> FatorL() | Token_Num() | <TRUE> | <FALSE>
+}
+
+void FatorL ():
+{}
+{
+  (<APARENTESES> (ListaExp())? <FPARENTESES>)?
+}
+
+void Op ():
+{}
+{
+  <ADD> | <SUB> | <MULT> | <DIV> | <AND> | <OR> | <MAIORIGUAL> | <MENORIGUAL> | <MAIOR> | <MENOR> | <IGUAL> | <DIFERENTE>
+}
+
+void ListaExp ():
+{}
+{
+  Exp() ListaExpL()
+}
+
+void ListaExpL ():
+{}
+{
+  (<VIRGULA> Exp() ListaExpL())?
+}
+
+void Func ():
+{}
+{
+  <FUNC> Tipo() <ID> <APARENTESES> (ListaArg())? <FPARENTESES> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> FuncL()
+}
+
+void FuncL ():
+{}
+{
+  (<FUNC> Tipo() <ID> <APARENTESES> (ListaArg())? <FPARENTESES> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> FuncL())?
+}
+
+void ListaArg ():
+{}
+{
+  Tipo() <ID> ListaArgL()
+}
+
+void ListaArgL ():
+{}
+{
+  (<VIRGULA> Tipo() <ID> ListaArgL())?
+}
+
+void Token_Num ():
+{}
+{
+  <NUM> | <FLOATNUM>
+}

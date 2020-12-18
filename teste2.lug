@@ -1,0 +1,24 @@
+main{
+    var int x;
+    x := 9;
+    print (fibonacci(x));
+}
+
+function int fibonacci(int a){
+    var int i;
+    var int x; 
+    var int y; 
+    var int z; 
+
+    i := 0; x := 0; y := 1;
+
+    while ( (i < a) ) do{
+        z := (x + y);
+        x := y;
+        y := z;
+
+        i := (i + 1);
+    };
+
+    return x;
+}
