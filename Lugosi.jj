@@ -2,15 +2,16 @@
 
 PARSER_BEGIN(Lugosi)
 import java.io.*;
+import java.util.*;
   
   // CONSTRUCAO DA ARVORE
 class ArvoreLugosi{
   Main main;
-  ArrayList<Func> func;
+  //ArrayList<Func> func;
 
-  ArvoreLugosi(Main m,ArrayList <Func> f){
+  ArvoreLugosi(Main m){
     this.main=m;
-    this.func=f;
+    //this.func=f;
   }
 }
 // FIM CONSTRUCAO DA ARVORE
@@ -18,11 +19,9 @@ class ArvoreLugosi{
 // MAIN
 class Main{
   ArrayList <Vardecl> vardecl;
-  ArrayList <SeqComandos> seqcom;
 
-  Main(ArrayList <Vardecl> v,ArrayList <SeqComandos> s){
+  Main(ArrayList<Vardecl> v){
     this.vardecl=v;
-    this.seqcom=s;
   }
 }
 // FIM MAIN
@@ -34,197 +33,12 @@ class Vardecl{
 
   Vardecl(String t, String v){
     this.tipo = t;
-    this.var = v.image;
+    this.var = v;
   }
 }
 //FIM VARDECL
 
-// SEQCOMANDOS
-class SeqComandos{
-  ArrayList <Comandos> comandos;
 
-  SeqComandos(ArrayList <Comandos> c){this.comandos=c;}
-}
-// FIM MAIN
-
-// COMANDOS
-class Comandos{}
-
-// ATRIBUICAO
-class Atrib extends Comandos{
-  String var;
-  Exp exp;
-
-  Atrib(String v, Exp e){
-    this.var=v.image;
-    this.exp=e;
-  }
-}
-// FIM ATRIBUICAO
-
-// PRINT
-class Print extends Comandos{
-  Exp exp;
-
-  Print(Exp e){
-    this.exp=e;
-  }
-}
-// FIM PRINT
-
-// WHILE
-class FuncCall extends Comandos{
-  String exp;
-  SeqComandos seqcom;
-
-  While(Exp exp, SeqComandos seqcom){
-    this.exp=e;
-    this.seqcom=s;
-  }
-}
-// FIM WHILE
-
-// IF
-class If extends Comandos{
-  Exp exp;
-  SeqComandos seqcom;
-
-  If(Exp e, SeqComandos s){
-    this.exp=e;
-    this.seqcom=s;
-  }
-}
-// FIM IF
-
-// WHILE
-class While extends Comandos{
-  Exp exp;
-  SeqComandos seqcom;
-
-  While(Exp exp, SeqComandos seqcom){
-    this.exp=e;
-    this.seqcom=s;
-  }
-}
-// FIM WHILE
-
-// DO-WHILE
-class DoWhile extends Comandos{
-  SeqComandos seqcom;
-  Exp exp;
-
-  DoWhile(SeqComandos seqcom, Exp exp){
-    this.seqcom=s;
-    this.exp=e;
-  }
-}
-// FIM DO-WHILE
-
-// RETURN
-class Return extends Comandos{
-  Exp exp;
-
-  Return(Exp e){this.exp = e;}
-}
-// FIM RETURN
-// FIM COMANDOS
-
-
-// COMANDOS
-class Exp{}
-
-// OPERATION
-class Operation extends Exp{
-  Exp exp1;
-  String op;
-  Exp exp2;
-
-  Operation(Exp e1, String o, Exp e2){
-    this.exp1 = e1;
-    this.op = o;
-    this.exp2 = e2;
-  }
-}
-// FIM OPERATION
-
-// FATOR
-class Fator extends Exp{}
-
-// FATOR_ID
-class FatorId extends Fator{
-  String TOKEN_id;
-
-  FatorId(String id){this.TOKEN_id = id;}
-}
-// FIM FATOR_ID
-
-// FATOR_FUNC
-class FatorFunc extends Fator{
-  String TOKEN_id;
-  ArrayList <Exp> ListaExp;
-
-  FatorId(String id, ArrayList <Exp> l){
-    this.TOKEN_id = id;
-    this.ListaExp = l;
-  }
-}
-// FIM FATOR_FUNC
-
-// FATOR_NUM
-class FatorNum extends Fator{
-  String TOKEN_numliteral;
-
-  FatorNum(String num){this.TOKEN_numliteral = num;}
-}
-// FIM FATOR_NUM
-
-// FATOR_BOOL
-class FatorBool extends Fator{
-  String bool;
-
-  FatorBool(String b){this.bool = b;}
-}
-// FIM FATOR_BOOL
-// FIM FATOR
-// FIM EXP
-
-// LISTAEXP
-class ListaExp{
-  Exp exp;
-
-  ListaExp(Exp e){this.exp = e;}
-}
-// FIM LISTAEXP
-
-// FUNC
-class Func{
-  String tipo;
-  String id;
-  ArrayList <ListaArg> listarg;
-  ArrayList <Vardecl> vardecl;
-  ArrayList <SeqComandos> seqcom;
-
-  Func(String t, String i, ArrayList <ListaArg> l, ArrayList <Vardecl> v, ArrayList <SeqComandos> s){
-    this.tipo = t;
-    this.id = i;
-    this.listarg = l;
-    this.vardecl = v;
-    this.seqcom = s;
-  }
-}
-// FIM FUNC
-
-// LISTAARG
-class ListaArg{
-  String tipo;
-  String id;
-
-  ListaArg(String t, String i){
-    this.tipo = t;
-    this.id = i;
-  }
-}
-// FIM LISTAARG
 
 public class Lugosi {
   
@@ -241,6 +55,7 @@ public class Lugosi {
     // Chamar a primeira regra do parser que irá
     // analisar o código e devolver a árvore sintática
     ArvoreLugosi arvore =parser.Lugosi();
+    pprint(arvore);
 
     // passar a árvore para o gerador de código
     // que deve gerar um arquivo .java com o mesmo
@@ -248,6 +63,27 @@ public class Lugosi {
     //geraCodigo(arvore, args[0]);
   }
   //public static void geraCodigo(ArvoreLugosi prog, String arquivo){??????}
+
+  public static void pprint (ArvoreLugosi prog){
+      if(prog instanceof ArvoreLugosi){
+         System.out.print("main");
+         System.out.println("{ ");
+
+        for(Vardecl varD: prog.main.vardecl){
+            System.out.print("var ");
+            System.out.print(varD.tipo + " ");
+            System.out.print(varD.var);
+            System.out.println(";");
+        }
+        /*System.out.print(" ");
+        pSeqComandos(prog.main.seqComandos);
+        System.out.println("}"); 
+        for(Func funcao: prog.funcao){
+            pFunc(funcao);
+        } */
+        System.out.println("}");
+       }
+  }
 }
 
 PARSER_END(Lugosi)
@@ -373,132 +209,24 @@ void AnaliseLexica () :
 
 // ANALISE SINTATICA
 ArvoreLugosi Lugosi () :
-{Main main; ArrayList <Func> func = new ArrayList <Func> ();}
+{Main main;}
 {
-  (main=MainLug()) (fun =Func())?
+  (main=MainLug())
   <EOF> 
-  {return new ArvoreLugosi(main, func);}
+  {return new ArvoreLugosi(main);}
 }
 
 Main MainLug () :
-{ArrayList <Vardecl> vardecl = new ArrayList <Vardecl>; SeqComandos seqcom;}
+{ArrayList<Vardecl> vardecl;}
 {
-  <MAIN> <ACHAVES> (vardecl=Vardecl(vardecl)) (seqcom=SeqComandos()) <FCHAVES>
-  {return new Main(vardecl, seqcom);}
+  <MAIN> <ACHAVES> (vardecl=Vardecl()) <FCHAVES>
+  {return new Main(vardecl);}
 }
 
-void Vardecl (ArrayList <Vardecl> var) :
-{Vardecl vardecl}
+ArrayList<Vardecl> Vardecl () :
+{ArrayList<Vardecl> vardeclL = new ArrayList<Vardecl>(); Token tipo; Token id;}
 {
-  (<VAR> Tipo() <ID> <PONTOVIRGULA> VardeclL())?
+  (<VAR> (tipo=<INT>) (id=<ID>) <PONTOVIRGULA> {vardeclL.add(new Vardecl(tipo.image, id.image));})*
+  {return vardeclL;}
 }
 
-void VardeclL () :
-{}
-{
-  (<VAR> Tipo() <ID> <PONTOVIRGULA> VardeclL())?
-}
-
-void Tipo () :
-{}
-{
-  <INT> | <FLOAT> | <BOOL> | <VOID>
-}
-
-void SeqComandos () :
-{}
-{
-  Comandos() SeqComandosL()
-}
-
-void SeqComandosL () :
-{}
-{
-  (Comandos() SeqComandosL())?
-}
-
-void Comandos ():
-{}
-{
-  (<ID> ComandosL())
-  | (<PRINT> <APARENTESES> Exp() <FPARENTESES> <PONTOVIRGULA>)
-  | ((<IF> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PONTOVIRGULA>) (<ELSE> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PONTOVIRGULA>)?)
-  | (<WHILE> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PONTOVIRGULA>)
-  | (<DO> <ACHAVES> SeqComandos() <FCHAVES> <WHILE> <APARENTESES> Exp() <FPARENTESES> <PONTOVIRGULA>)
-  | (<RETURN> Exp() <PONTOVIRGULA>)
-
-}
-
-void ComandosL ():
-{}
-{
-  <ATRIB> Exp() <PONTOVIRGULA>
-  | <APARENTESES> (ListaExp())? <FPARENTESES> <PONTOVIRGULA>
-}
-
-void Exp ():
-{}
-{
-  <APARENTESES> Exp() Op() Exp() <FPARENTESES>
-  | Fator()
-}
-
-void Fator ():
-{}
-{
-  <ID> FatorL() | Token_Num() | <TRUE> | <FALSE>
-}
-
-void FatorL ():
-{}
-{
-  (<APARENTESES> (ListaExp())? <FPARENTESES>)?
-}
-
-void Op ():
-{}
-{
-  <ADD> | <SUB> | <MULT> | <DIV> | <AND> | <OR> | <MAIORIGUAL> | <MENORIGUAL> | <MAIOR> | <MENOR> | <IGUAL> | <DIFERENTE>
-}
-
-void ListaExp ():
-{}
-{
-  Exp() ListaExpL()
-}
-
-void ListaExpL ():
-{}
-{
-  (<VIRGULA> Exp() ListaExpL())?
-}
-
-void Func ():
-{}
-{
-  <FUNC> Tipo() <ID> <APARENTESES> (ListaArg())? <FPARENTESES> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> FuncL()
-}
-
-void FuncL ():
-{}
-{
-  (<FUNC> Tipo() <ID> <APARENTESES> (ListaArg())? <FPARENTESES> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> FuncL())?
-}
-
-void ListaArg ():
-{}
-{
-  Tipo() <ID> ListaArgL()
-}
-
-void ListaArgL ():
-{}
-{
-  (<VIRGULA> Tipo() <ID> ListaArgL())?
-}
-
-void Token_Num ():
-{}
-{
-  <NUM> | <FLOATNUM>
-}
