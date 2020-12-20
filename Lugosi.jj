@@ -3,15 +3,17 @@
 PARSER_BEGIN(Lugosi)
 import java.io.*;
 import java.util.*;
+import java.io.FileWriter;
+import java.io.IOException;
   
   // CONSTRUCAO DA ARVORE
 class ArvoreLugosi{
   Main main;
-  //ArrayList<Func> func;
+  ArrayList<Func> func;
 
-  ArvoreLugosi(Main m){
+  ArvoreLugosi(Main m, ArrayList<Func> f){
     this.main=m;
-    //this.func=f;
+    this.func=f;
   }
 }
 // FIM CONSTRUCAO DA ARVORE
@@ -118,7 +120,8 @@ class Fator_Id extends Exp{
   String id;
 
   Fator_Id(String s){
-    this.id = id;
+    this.id = s;
+    //System.out.println(this.id);
   }
 }
 
@@ -149,6 +152,34 @@ class Fator_Lista extends Exp{
 }
 
 
+
+class Func{
+  String tipo;
+  String id;
+  ArrayList <ListaArg> listaarg;
+  ArrayList <Vardecl> vardecl;
+  ArrayList <Comandos> seqcom;
+
+  Func(String t, String i, ArrayList<ListaArg> l, ArrayList<Vardecl> v, ArrayList<Comandos> c){
+    this.tipo = t;
+    this.id = i;
+    this.listaarg = l;
+    this.vardecl = v;
+    this.seqcom = c;
+  }
+}
+
+class ListaArg{
+  String tipo;
+  String id;
+
+  ListaArg(String t, String i){
+    this.tipo = t;
+    this.id = i;
+  }
+}
+
+
 public class Lugosi {
   
   public static void main(String args[]) throws Exception{
@@ -164,34 +195,103 @@ public class Lugosi {
     // Chamar a primeira regra do parser que irá
     // analisar o código e devolver a árvore sintática
     ArvoreLugosi arvore =parser.Lugosi();
-    //pprint(arvore);
 
     // passar a árvore para o gerador de código
     // que deve gerar um arquivo .java com o mesmo
     //nome do arquivo de entrada
-    //geraCodigo(arvore, args[0]);
+    geraCodigo(arvore, args[0]);
   }
-  //public static void geraCodigo(ArvoreLugosi prog, String arquivo){??????}
+  public static void geraCodigo(ArvoreLugosi prog, String arquivo){
+    String msg = "";
+    if(prog instanceof ArvoreLugosi){
+      arquivo = arquivo.replace(".lug","");
+      msg +="import java.io.*;\npublic class " + arquivo + "{";
 
-  /*public static void pprint (ArvoreLugosi prog){
-      if(prog instanceof ArvoreLugosi){
-         System.out.print("main");
-         System.out.println("{ ");
-
-        for(Vardecl varD: prog.main.vardecl){
-            System.out.print("var ");
-            System.out.print(varD.tipo + " ");
-            System.out.print(varD.var);
-            System.out.println(";");
+      for(Vardecl v: prog.main.vardecl){
+        if (v.tipo == "bool"){
+          msg += "boolean" + " " + v.var + ";";
         }
-        System.out.print(" ");
-        pSeqComandos(prog.main.seqComandos);
-        System.out.println("}"); 
-        for(Func funcao: prog.funcao){
-            pFunc(funcao);
-        } 
-       }
-  }*/
+        else{
+          msg += v.tipo + " " + v.var + ";";
+        }
+      }
+      for(Comandos c: prog.main.seqcom){
+        if(c instanceof Print){
+          msg += "System.out.println(";
+          msg += ");";
+        }
+        else{ if(c instanceof If){
+          msg += "if(";
+          Exp e = ((If) c).exp;
+          msg += catchExp(e);
+          msg += "){";
+          msg += "};";
+        }
+        else{ if(c instanceof While){
+          msg += "while(";
+          msg += "){";
+          msg += "}";
+        }
+        else{ if(c instanceof DoWhile){
+          msg += "do{";
+          msg += "}while(";
+          msg += ");";
+        }
+        else{ if(c instanceof Return){
+          msg += "return ";
+          msg += ";";
+        }
+        else{ if(c instanceof Atribuicao){
+          msg += "=";
+          msg += ";";
+        }
+      }}}}}}
+
+      msg += "}";
+    }
+
+    try {
+      FileWriter myWriter = new FileWriter(arquivo + ".java");
+      myWriter.write(msg);
+      myWriter.close();
+      System.out.println("Successfully wrote to the file.");
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+  }
+
+  public static String catchExp(Exp e){
+    if
+
+  }
+
+  public static String catchFat(Exp e){
+    String msg = "";
+    if(e instanceof Fator_Id){
+      msg += ((Fator_Id)e).id;
+    }
+    else{ if(e instanceof Fator_Num){
+      msg += ((Fator_Num)e).num;
+    }
+    else{ if(e instanceof Fator_Bool){
+      msg += ((Fator_Bool)e).state;
+    }
+    else{ if(e instanceof Fator_Lista)
+      msg += ((Fator_Lista)e).id + "(";
+      int i=0;
+      for (Exp le: ((Fator_Lista)e).lista){
+        msg += catchExp(le);
+        if(i < ((((Fator_Lista)e).lista).size()-1)){
+          msg += ",";
+        }
+      }
+      msg += ")";
+    }}}
+
+    return msg;
+  }
+
 }
 
 PARSER_END(Lugosi)
@@ -317,11 +417,11 @@ void AnaliseLexica () :
 
 // ANALISE SINTATICA
 ArvoreLugosi Lugosi () :
-{Main main;}
+{Main main; ArrayList<Func> func;}
 {
-  (main=MainLug())
+  (main=MainLug()) func=ListFunc()
   <EOF> 
-  {return new ArvoreLugosi(main);}
+  {return new ArvoreLugosi(main, func);}
 }
 
 Main MainLug () :
@@ -405,4 +505,25 @@ Token Op () :
   | (t=<MENORIGUAL> {return t;})
   | (t=<MAIOR> {return t;})
   | (t=<MENOR> {return t;})
+}
+
+ArrayList <Func> ListFunc () :
+{ArrayList <Func> lista = new ArrayList<Func>(); Token tipo; Token id; ArrayList<ListaArg> listaarg; ArrayList<Vardecl> vardecl;ArrayList<Comandos> seqcom;}
+{
+  (<FUNC> (tipo=Tipo()) (id=<ID>) <APARENTESES> (listaarg=ListaArg()) <FPARENTESES> <ACHAVES> (vardecl=Vardecl()) (seqcom=SeqComandos()) <FCHAVES> {lista.add(new Func(tipo.image, id.image, listaarg, vardecl, seqcom));})*
+  {return lista;}
+}
+
+ArrayList <ListaArg> ListaArg () :
+{ArrayList <ListaArg> lista = new ArrayList <ListaArg>(); Token tipo; Token id;}
+{
+  ((tipo=Tipo()) (id=<ID>) (lista = ListaArgL()))?
+  {return lista;}
+}
+
+ArrayList <ListaArg> ListaArgL () :
+{ArrayList <ListaArg> lista = new ArrayList <ListaArg>(); Token tipo; Token id;}
+{
+  (<VIRGULA> (tipo=Tipo()) (id=<ID>) {lista.add(new ListaArg(tipo.image, id.image));})*
+  {return lista;}
 }

@@ -1,3 +1,20 @@
 main{
     var int i;
+    var int y;
+    var float f;
+
+    i:=1;
+    y:=1;
+    f:=0;
+
+    if ((i==y)){
+      f := func(i,y);        
+    };
+
+}
+
+function void func(int a, int b){
+    var float res;
+    res := (a + b);
+    print(res);
 }
