@@ -146,8 +146,9 @@ class Fator_Lista extends Exp{
   ArrayList <Exp> lista;
 
   Fator_Lista(String s, ArrayList<Exp> l){
-    this.id = id;
+    this.id = s;
     this.lista = l;
+    //System.out.println(id);
   }
 }
 
@@ -215,7 +216,25 @@ public class Lugosi {
           msg += v.tipo + " " + v.var + ";";
         }
       }
-      for(Comandos c: prog.main.seqcom){
+      msg += catchSeqComandos(prog.main.seqcom);
+
+      msg += "}";
+    }
+
+    try {
+      FileWriter myWriter = new FileWriter(arquivo + ".java");
+      myWriter.write(msg);
+      myWriter.close();
+      System.out.println("Successfully wrote to the file.");
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+  }
+
+  public static String catchSeqComandos(ArrayList<Comandos> seqcom){
+    String msg = "";
+    for(Comandos c: seqcom){
         if(c instanceof Print){
           msg += "System.out.println(";
           msg += ");";
@@ -225,6 +244,7 @@ public class Lugosi {
           Exp e = ((If) c).exp;
           msg += catchExp(e);
           msg += "){";
+          msg += catchSeqComandos(((If) c).seqcom);
           msg += "};";
         }
         else{ if(c instanceof While){
@@ -242,31 +262,17 @@ public class Lugosi {
           msg += ";";
         }
         else{ if(c instanceof Atribuicao){
+          msg += ((Atribuicao) c).var;
           msg += "=";
+          msg += catchExp(((Atribuicao) c).exp);
           msg += ";";
         }
       }}}}}}
 
-      msg += "}";
-    }
-
-    try {
-      FileWriter myWriter = new FileWriter(arquivo + ".java");
-      myWriter.write(msg);
-      myWriter.close();
-      System.out.println("Successfully wrote to the file.");
-    } catch (IOException e) {
-      System.out.println("An error occurred.");
-      e.printStackTrace();
-    }
+      return msg;
   }
 
   public static String catchExp(Exp e){
-    if
-
-  }
-
-  public static String catchFat(Exp e){
     String msg = "";
     if(e instanceof Fator_Id){
       msg += ((Fator_Id)e).id;
@@ -277,8 +283,9 @@ public class Lugosi {
     else{ if(e instanceof Fator_Bool){
       msg += ((Fator_Bool)e).state;
     }
-    else{ if(e instanceof Fator_Lista)
+    else{ if(e instanceof Fator_Lista){
       msg += ((Fator_Lista)e).id + "(";
+      //System.out.println(((Fator_Lista)e).id);
       int i=0;
       for (Exp le: ((Fator_Lista)e).lista){
         msg += catchExp(le);
@@ -287,6 +294,7 @@ public class Lugosi {
         }
       }
       msg += ")";
+    }
     }}}
 
     return msg;
