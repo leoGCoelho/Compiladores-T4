@@ -19,9 +19,11 @@ class ArvoreLugosi{
 // MAIN
 class Main{
   ArrayList <Vardecl> vardecl;
+  ArrayList<Comandos> seqcom;
 
-  Main(ArrayList<Vardecl> v){
+  Main(ArrayList<Vardecl> v, ArrayList<Comandos> sc){
     this.vardecl=v;
+    this.seqcom=sc;
   }
 }
 // FIM MAIN
@@ -32,12 +34,119 @@ class Vardecl{
   String var;
 
   Vardecl(String t, String v){
-    this.tipo = t;
-    this.var = v;
+    this.tipo=t;
+    this.var=v;
   }
 }
 //FIM VARDECL
 
+
+class Comandos{}
+
+class Atribuicao extends Comandos{
+  String var;
+  Exp exp;
+
+  Atribuicao(String v, Exp e){
+    this.var=v;
+    this.exp=e;
+  }
+}
+
+class Print extends Comandos{
+  Exp exp;
+
+  Print(Exp e){
+    this.exp=e;
+  }
+}
+
+class Return extends Comandos{
+  Exp exp;
+
+  Return(Exp e){
+    this.exp=e;
+  }
+}
+
+class If extends Comandos{
+  Exp exp;
+  ArrayList<Comandos> seqcom;
+
+  If(Exp e, ArrayList<Comandos> s){
+    this.exp=e;
+    this.seqcom=s;
+  }
+}
+
+class While extends Comandos{
+  Exp exp;
+  ArrayList<Comandos> seqcom;
+
+  While(Exp e, ArrayList<Comandos> s){
+    this.exp=e;
+    this.seqcom=s;
+  }
+}
+
+class DoWhile extends Comandos{
+  Exp exp;
+  ArrayList<Comandos> seqcom;
+
+  DoWhile(Exp e, ArrayList<Comandos> s){
+    this.exp=e;
+    this.seqcom=s;
+  }
+}
+
+
+class Exp{}
+
+class Operation extends Exp{
+  Exp exp1;
+  String op;
+  Exp exp2;
+
+  Operation(Exp e1, String o, Exp e2){
+    this.exp1=e1;
+    this.op=o;
+    this.exp2=e2;
+  }
+}
+
+class Fator_Id extends Exp{
+  String id;
+
+  Fator_Id(String s){
+    this.id = id;
+  }
+}
+
+class Fator_Num extends Exp{
+  String num;
+
+  Fator_Num(String n){
+    this.num = n;
+  }
+}
+
+class Fator_Bool extends Exp{
+  String state;
+
+  Fator_Bool(String s){
+    this.state = s;
+  }
+}
+
+class Fator_Lista extends Exp{
+  String id;
+  ArrayList <Exp> lista;
+
+  Fator_Lista(String s, ArrayList<Exp> l){
+    this.id = id;
+    this.lista = l;
+  }
+}
 
 
 public class Lugosi {
@@ -55,7 +164,7 @@ public class Lugosi {
     // Chamar a primeira regra do parser que irá
     // analisar o código e devolver a árvore sintática
     ArvoreLugosi arvore =parser.Lugosi();
-    pprint(arvore);
+    //pprint(arvore);
 
     // passar a árvore para o gerador de código
     // que deve gerar um arquivo .java com o mesmo
@@ -64,7 +173,7 @@ public class Lugosi {
   }
   //public static void geraCodigo(ArvoreLugosi prog, String arquivo){??????}
 
-  public static void pprint (ArvoreLugosi prog){
+  /*public static void pprint (ArvoreLugosi prog){
       if(prog instanceof ArvoreLugosi){
          System.out.print("main");
          System.out.println("{ ");
@@ -75,15 +184,14 @@ public class Lugosi {
             System.out.print(varD.var);
             System.out.println(";");
         }
-        /*System.out.print(" ");
+        System.out.print(" ");
         pSeqComandos(prog.main.seqComandos);
         System.out.println("}"); 
         for(Func funcao: prog.funcao){
             pFunc(funcao);
-        } */
-        System.out.println("}");
+        } 
        }
-  }
+  }*/
 }
 
 PARSER_END(Lugosi)
@@ -217,16 +325,84 @@ ArvoreLugosi Lugosi () :
 }
 
 Main MainLug () :
-{ArrayList<Vardecl> vardecl;}
+{ArrayList<Vardecl> vardecl;ArrayList<Comandos> seqcom;}
 {
-  <MAIN> <ACHAVES> (vardecl=Vardecl()) <FCHAVES>
-  {return new Main(vardecl);}
+  <MAIN> <ACHAVES> (vardecl=Vardecl()) (seqcom=SeqComandos()) <FCHAVES>
+  {return new Main(vardecl, seqcom);}
 }
 
 ArrayList<Vardecl> Vardecl () :
 {ArrayList<Vardecl> vardeclL = new ArrayList<Vardecl>(); Token tipo; Token id;}
 {
-  (<VAR> (tipo=<INT>) (id=<ID>) <PONTOVIRGULA> {vardeclL.add(new Vardecl(tipo.image, id.image));})*
+  (<VAR> (tipo=Tipo()) (id=<ID>) <PONTOVIRGULA> {vardeclL.add(new Vardecl(tipo.image, id.image));})*
   {return vardeclL;}
 }
 
+Token Tipo () :
+{Token t;}
+{
+  (t=<INT> {return t;})
+  | (t=<BOOL> {return t;})
+  | (t=<FLOAT> {return t;})
+  | (t=<VOID> {return t;})
+}
+
+ArrayList<Comandos> SeqComandos () :
+{Comandos com; ArrayList seqcom = new ArrayList<Comandos>();}
+{
+  (com = Comandos() {seqcom.add(com);})*
+  {return seqcom;}
+}
+
+Comandos Comandos ():
+{Token id; Exp e; ArrayList<Comandos> seqcom;}
+{
+  ((id=<ID>) <ATRIB> (e=Exp()) <PONTOVIRGULA> {return new Atribuicao(id.image,e);})
+  | (<PRINT> <APARENTESES> (e=Exp()) <FPARENTESES> <PONTOVIRGULA> {return new Print(e);})
+  | (<RETURN> (e=Exp()) <PONTOVIRGULA> {return new Return(e);})
+  | (<IF> <APARENTESES> (e=Exp()) <FPARENTESES> <ACHAVES> (seqcom=SeqComandos()) <FCHAVES> <PONTOVIRGULA> {return new If(e, seqcom);})
+  | (<WHILE> <APARENTESES> (e=Exp()) <FPARENTESES> <DO> <ACHAVES> (seqcom=SeqComandos()) <FCHAVES> <PONTOVIRGULA> {return new While(e, seqcom);})
+  | (<DO> <ACHAVES> (seqcom=SeqComandos()) <FCHAVES> <WHILE> <APARENTESES> (e=Exp()) <FPARENTESES> <PONTOVIRGULA> {return new DoWhile(e, seqcom);})
+}
+
+Exp Exp ():
+{Exp e1; Token op; Exp e2; Token val; ArrayList <Exp> listaexp;}
+{
+  (<APARENTESES> (e1=Exp()) (op=Op()) (e2=Exp()) <FPARENTESES> {return new Operation(e1,op.image,e2);})
+  | (val=<ID> (<APARENTESES> listaexp=ListaExp() <FPARENTESES> {return new Fator_Lista(val.image, listaexp);})? {return new Fator_Id(val.image);})
+  | (val=<NUM> {return new Fator_Num(val.image);})
+  | (val=<FLOATNUM> {return new Fator_Num(val.image);})
+  | (val=<TRUE> {return new Fator_Bool(val.image);})
+  | (val=<FALSE> {return new Fator_Bool(val.image);})
+}
+
+ArrayList <Exp> ListaExp () :
+{Exp exp; ArrayList<Exp> lista = new ArrayList<Exp>();}
+{
+  (exp=Exp() lista = ListaExpL())?
+  {return lista;}
+}
+
+ArrayList <Exp> ListaExpL () :
+{Exp exp; ArrayList<Exp> lista = new ArrayList<Exp>();}
+{
+  (<VIRGULA> (exp=Exp()) {lista.add(exp);})?
+  {return lista;}
+}
+
+Token Op () :
+{Token t;}
+{
+  (t=<ADD> {return t;})
+  | (t=<SUB> {return t;})
+  | (t=<MULT> {return t;})
+  | (t=<DIV> {return t;})
+  | (t=<AND> {return t;})
+  | (t=<OR> {return t;})
+  | (t=<IGUAL> {return t;})
+  | (t=<DIFERENTE> {return t;})
+  | (t=<MAIORIGUAL> {return t;})
+  | (t=<MENORIGUAL> {return t;})
+  | (t=<MAIOR> {return t;})
+  | (t=<MENOR> {return t;})
+}
