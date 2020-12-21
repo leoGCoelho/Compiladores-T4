@@ -1,7 +1,5 @@
 main{
     var int i;
-    var float i2;
-    var void i3;
     var bool flag;
     i := 0;
     flag := Menor (i, 10);
@@ -15,10 +13,8 @@ main{
 }
 
 function bool Menor (int x, int y){
-    if ((x < y)) do{
+    if ((x < y)){
         return true;
     };
-    else do{
-        return false;
-    };
+    return false;
 }

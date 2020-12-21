@@ -1,20 +1,27 @@
 main{
     var int i;
     var int y;
-    var float f;
+    var int f;
 
-    i:=1;
+    i:=3;
     y:=1;
     f:=0;
 
-    if ((i==y)){
-      f := func(i,y);        
+    while((i > 0)) do{
+        if ((i == y)){
+            f := func(i,y);        
+        };
+        i := (i-1);
+        print(i);
     };
+
+    print(f);
 
 }
 
-function void func(int a, int b){
-    var float res;
+function int func(int a, int b){
+    var int res;
     res := (a + b);
-    print(res);
+
+    return res;
 }

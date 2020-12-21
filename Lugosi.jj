@@ -6,7 +6,8 @@ import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
   
-  // CONSTRUCAO DA ARVORE
+// CONSTRUCAO DA ARVORE
+// ARVORE
 class ArvoreLugosi{
   Main main;
   ArrayList<Func> func;
@@ -16,7 +17,7 @@ class ArvoreLugosi{
     this.func=f;
   }
 }
-// FIM CONSTRUCAO DA ARVORE
+// FIM ARVORE
 
 // MAIN
 class Main{
@@ -40,11 +41,12 @@ class Vardecl{
     this.var=v;
   }
 }
-//FIM VARDECL
+// FIM VARDECL
 
-
+// COMANDOS
 class Comandos{}
 
+// ATRIBUICAO
 class Atribuicao extends Comandos{
   String var;
   Exp exp;
@@ -54,7 +56,9 @@ class Atribuicao extends Comandos{
     this.exp=e;
   }
 }
+// FIM ATRIBUICAO
 
+// PRINT
 class Print extends Comandos{
   Exp exp;
 
@@ -62,7 +66,9 @@ class Print extends Comandos{
     this.exp=e;
   }
 }
+// FIM PRINT
 
+// RETURN
 class Return extends Comandos{
   Exp exp;
 
@@ -70,7 +76,9 @@ class Return extends Comandos{
     this.exp=e;
   }
 }
+// FIM RETURN
 
+// IF
 class If extends Comandos{
   Exp exp;
   ArrayList<Comandos> seqcom;
@@ -80,7 +88,9 @@ class If extends Comandos{
     this.seqcom=s;
   }
 }
+// FIM IF
 
+// WHILE
 class While extends Comandos{
   Exp exp;
   ArrayList<Comandos> seqcom;
@@ -90,7 +100,9 @@ class While extends Comandos{
     this.seqcom=s;
   }
 }
+// FIM WHILE
 
+// DO-WHILE
 class DoWhile extends Comandos{
   Exp exp;
   ArrayList<Comandos> seqcom;
@@ -100,10 +112,13 @@ class DoWhile extends Comandos{
     this.seqcom=s;
   }
 }
+// FIM DO-WHILE
+// FIM COMANDOS
 
-
+// EXP
 class Exp{}
 
+// OPERATIONS
 class Operation extends Exp{
   Exp exp1;
   String op;
@@ -115,7 +130,10 @@ class Operation extends Exp{
     this.exp2=e2;
   }
 }
+// FIM OPERATIONS
 
+// FATOR
+// FATOR ID
 class Fator_Id extends Exp{
   String id;
 
@@ -124,7 +142,9 @@ class Fator_Id extends Exp{
     //System.out.println(this.id);
   }
 }
+//FIM FATOR ID
 
+// FATOR NUM
 class Fator_Num extends Exp{
   String num;
 
@@ -132,7 +152,9 @@ class Fator_Num extends Exp{
     this.num = n;
   }
 }
+// FIM FATOR NUM
 
+// FATOR BOOL
 class Fator_Bool extends Exp{
   String state;
 
@@ -140,7 +162,9 @@ class Fator_Bool extends Exp{
     this.state = s;
   }
 }
+// FIM FATOR BOOL
 
+// FATOR LISTA
 class Fator_Lista extends Exp{
   String id;
   ArrayList <Exp> lista;
@@ -151,9 +175,12 @@ class Fator_Lista extends Exp{
     //System.out.println(id);
   }
 }
+// FIM FATOR LISTA
+// FIM FATOR
+// FIM EXP
 
 
-
+// FUNC
 class Func{
   String tipo;
   String id;
@@ -169,7 +196,9 @@ class Func{
     this.seqcom = c;
   }
 }
+// FIM FUNC
 
+// LISTAARG
 class ListaArg{
   String tipo;
   String id;
@@ -179,6 +208,9 @@ class ListaArg{
     this.id = i;
   }
 }
+// FIM LISTAARG
+
+// FIM CONSTRUCAO DA ARVORE
 
 
 public class Lugosi {
@@ -205,8 +237,11 @@ public class Lugosi {
   public static void geraCodigo(ArvoreLugosi prog, String arquivo){
     String msg = "";
     if(prog instanceof ArvoreLugosi){
+      //ARQUIVO
       arquivo = arquivo.replace(".lug","");
-      msg +="import java.io.*;\npublic class " + arquivo + "{";
+      
+      //MAIN
+      msg +="import java.io.*;\npublic class " + arquivo + "{\n public static void main(String args[]) throws IOException{";
 
       for(Vardecl v: prog.main.vardecl){
         if (v.tipo == "bool"){
@@ -219,9 +254,51 @@ public class Lugosi {
       msg += catchSeqComandos(prog.main.seqcom);
 
       msg += "}";
+      //FIM MAIN
+
+      //FUNC
+      for(Func f: prog.func){
+        msg += "\n public static ";
+        if (f.tipo == "bool"){
+          msg += "boolean ";
+        }
+        else{
+          msg += f.tipo + " ";
+        }
+        msg += f.id + "(";
+        int i=0;
+        for(ListaArg l: f.listaarg){
+          if (l.tipo == "bool"){
+            msg += "boolean";
+          }
+          else{
+            msg += l.tipo;
+          }
+          msg += " " + l.id;
+          if(i < (f.listaarg.size()-1)){
+            msg += ",";
+          }
+          i++;
+        }
+        msg += "){";
+        for(Vardecl v: f.vardecl){
+          if (v.tipo == "bool"){
+            msg += "boolean" + " " + v.var + ";";
+          }
+          else{
+            msg += v.tipo + " " + v.var + ";";
+          }
+        }
+        msg += catchSeqComandos(f.seqcom);
+        msg += "}";
+      }
+      //FIM FUNC
+
+      msg += "\n}";
+      //FIM ARQUIVO
     }
 
-    try {
+    try { //REFERENCIA = https://www.devmedia.com.br/leitura-e-escrita-de-arquivos-de-texto-em-java/25529
       FileWriter myWriter = new FileWriter(arquivo + ".java");
       myWriter.write(msg);
       myWriter.close();
@@ -237,6 +314,8 @@ public class Lugosi {
     for(Comandos c: seqcom){
         if(c instanceof Print){
           msg += "System.out.println(";
+          Exp e = ((Print) c).exp;
+          msg += catchExp(e);
           msg += ");";
         }
         else{ if(c instanceof If){
@@ -245,20 +324,28 @@ public class Lugosi {
           msg += catchExp(e);
           msg += "){";
           msg += catchSeqComandos(((If) c).seqcom);
-          msg += "};";
+          msg += "}";
         }
         else{ if(c instanceof While){
           msg += "while(";
+          Exp e = ((While) c).exp;
+          msg += catchExp(e);
           msg += "){";
+          msg += catchSeqComandos(((While) c).seqcom);
           msg += "}";
         }
         else{ if(c instanceof DoWhile){
           msg += "do{";
+          msg += catchSeqComandos(((DoWhile) c).seqcom);
           msg += "}while(";
+          Exp e = ((DoWhile) c).exp;
+          msg += catchExp(e);
           msg += ");";
         }
         else{ if(c instanceof Return){
           msg += "return ";
+          Exp e = ((Return) c).exp;
+          msg += catchExp(e);
           msg += ";";
         }
         else{ if(c instanceof Atribuicao){
@@ -292,10 +379,17 @@ public class Lugosi {
         if(i < ((((Fator_Lista)e).lista).size()-1)){
           msg += ",";
         }
+        i++;
       }
       msg += ")";
     }
-    }}}
+    else{ if(e instanceof Operation){
+      msg += catchExp(((Operation)e).exp1);
+      msg += ((Operation)e).op;
+      msg += catchExp(((Operation)e).exp2);
+    }
+
+    }}}}
 
     return msg;
   }
@@ -422,8 +516,7 @@ void AnaliseLexica () :
 }
 // FIM ANALISE LEXICA
 
-
-// ANALISE SINTATICA
+//CONSTRUCAO DA ARVORE
 ArvoreLugosi Lugosi () :
 {Main main; ArrayList<Func> func;}
 {
@@ -487,7 +580,7 @@ Exp Exp ():
 ArrayList <Exp> ListaExp () :
 {Exp exp; ArrayList<Exp> lista = new ArrayList<Exp>();}
 {
-  (exp=Exp() lista = ListaExpL())?
+  (exp=Exp() {lista.add(exp);lista.addAll(ListaExpL());})?
   {return lista;}
 }
 
@@ -525,7 +618,7 @@ ArrayList <Func> ListFunc () :
 ArrayList <ListaArg> ListaArg () :
 {ArrayList <ListaArg> lista = new ArrayList <ListaArg>(); Token tipo; Token id;}
 {
-  ((tipo=Tipo()) (id=<ID>) (lista = ListaArgL()))?
+  ((tipo=Tipo()) (id=<ID>) ({lista.add(new ListaArg(tipo.image, id.image));lista.addAll(ListaArgL());}))?
   {return lista;}
 }
 
@@ -535,3 +628,4 @@ ArrayList <ListaArg> ListaArgL () :
   (<VIRGULA> (tipo=Tipo()) (id=<ID>) {lista.add(new ListaArg(tipo.image, id.image));})*
   {return lista;}
 }
+//FIM CONSTRUCAO
