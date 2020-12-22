@@ -1,4 +1,7 @@
-// FUNCOES ADICIONADAS NAO REQUISITADAS: ELSE, >, <, !
+/* APOS COMPILAR UM ARQUIVO:
+  javac Nome_Arquivo.java
+  java Nome_Arquivo
+*/
 
 PARSER_BEGIN(Lugosi)
 import java.io.*;
@@ -628,4 +631,3 @@ ArrayList <ListaArg> ListaArgL () :
   (<VIRGULA> (tipo=Tipo()) (id=<ID>) {lista.add(new ListaArg(tipo.image, id.image));})*
   {return lista;}
 }
-//FIM CONSTRUCAO
